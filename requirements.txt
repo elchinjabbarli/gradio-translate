@@ -1,0 +1,3 @@
+gradio-client
+fastapi
+uvicorn
