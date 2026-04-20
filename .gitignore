@@ -2,6 +2,11 @@
 # Dependencies
 node_modules/
 
+# Build artifacts
+dist/
+build/
+target/
+
 # Logs and temp files
 *.log
 *.tmp
@@ -9,16 +14,11 @@ node_modules/
 # Environment
 .env
 .env.local
-*.env.*
+.env.*
 
 # Editors
 .vscode/
 .idea/
-
-# Build artifacts
-dist/
-build/
-target/
 
 # Python
 __pycache__/
@@ -26,28 +26,7 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
-env/
 venv/
 .venv/
-.venv.bak/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.log
-*.pot
-*.pyc
-*.pyo
-*.pyd
-.MF
-tags
-TAGS
-.idleproc
-.DS_Store
-Thumbs.db
+.env
 ```
