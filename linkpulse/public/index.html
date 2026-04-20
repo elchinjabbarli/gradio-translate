@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkPulse - Shorten Your Links & Earn Money</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="url"] {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="url"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .short-link {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+            word-break: break-all;
+            margin-bottom: 15px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .copy-btn {
+            background: #28a745;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .stats-link {
+            text-align: center;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .stats-link:hover {
+            text-decoration: underline;
+        }
+
+        .error {
+            background: #fee;
+            color: #c00;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .features {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .feature-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .feature-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .feature-desc {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 LinkPulse</h1>
+        <p class="subtitle">Shorten links, share them, and earn money from every click!</p>
+
+        <form id="shortenForm">
+            <div class="input-group">
+                <input 
+                    type="url" 
+                    id="urlInput" 
+                    placeholder="Paste your long URL here..." 
+                    required
+                >
+                <button type="submit" id="shortenBtn">
+                    Shorten
+                </button>
+            </div>
+        </form>
+
+        <div class="error" id="errorBox"></div>
+
+        <div class="result" id="resultBox">
+            <div class="short-link" id="shortLink"></div>
+            <button class="copy-btn" id="copyBtn">📋 Copy to Clipboard</button>
+            <a href="#" class="stats-link" id="statsLink" target="_blank">📊 View Statistics</a>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">💰</div>
+                <div class="feature-title">Earn Money</div>
+                <div class="feature-desc">Get paid for every click</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-title">Fast</div>
+                <div class="feature-desc">Instant link shortening</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📈</div>
+                <div class="feature-title">Analytics</div>
+                <div class="feature-desc">Track your clicks</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-title">Secure</div>
+                <div class="feature-desc">Safe & reliable</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('shortenForm');
+        const urlInput = document.getElementById('urlInput');
+        const shortenBtn = document.getElementById('shortenBtn');
+        const resultBox = document.getElementById('resultBox');
+        const shortLink = document.getElementById('shortLink');
+        const copyBtn = document.getElementById('copyBtn');
+        const statsLink = document.getElementById('statsLink');
+        const errorBox = document.getElementById('errorBox');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const url = urlInput.value.trim();
+            if (!url) return;
+
+            // Show loading state
+            shortenBtn.disabled = true;
+            shortenBtn.innerHTML = '<span class="loading"></span>Shortening...';
+            errorBox.classList.remove('show');
+            resultBox.classList.remove('show');
+
+            try {
+                const response = await fetch('/api/shorten', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    shortLink.textContent = data.shortUrl;
+                    statsLink.href = `/api/stats/${data.shortId}`;
+                    statsLink.target = '_blank';
+                    resultBox.classList.add('show');
+                    urlInput.value = '';
+                } else {
+                    throw new Error(data.error || 'Failed to shorten URL');
+                }
+            } catch (error) {
+                errorBox.textContent = error.message;
+                errorBox.classList.add('show');
+            } finally {
+                shortenBtn.disabled = false;
+                shortenBtn.innerHTML = 'Shorten';
+            }
+        });
+
+        copyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(shortLink.textContent);
+                copyBtn.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 Copy to Clipboard';
+                }, 2000);
+            } catch (err) {
+                copyBtn.textContent = '❌ Failed to copy';
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 Copy to Clipboard';
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
