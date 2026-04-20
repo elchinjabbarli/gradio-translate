@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebToolKit - Ücretsiz Online Araçlar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .tool-card.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .page-transition {
+            animation: pageSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes pageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .input-modern {
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .input-modern:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        .hidden-page {
+            display: none;
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Reklam alanı */
+        .ad-space {
+            background: #f7fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #718096;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <!-- Ana Sayfa -->
+    <div id="home-page" class="max-w-6xl mx-auto page-transition">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">
+                <i class="fas fa-toolbox mr-4"></i>WebToolKit
+            </h1>
+            <p class="text-xl text-white/90 max-w-2xl mx-auto">
+                Gizlilik odaklı, ücretsiz online araçlar. Dosyalarınız asla sunucuya yüklenmez, her şey tarayıcınızda işlenir.
+            </p>
+            
+            <!-- Reklam Alanı 1 -->
+            <div class="ad-space mt-8 max-w-4xl mx-auto" id="ad-top">
+                <div>
+                    <i class="fas fa-ad text-2xl mb-2"></i>
+                    <p>Reklam Alanı - Google AdSense veya diğer reklam ağları buraya gelecek</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Araçlar Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            <!-- Resim Sıkıştırma -->
+            <div class="tool-card glass-effect p-6" onclick="showTool('image-compress')">
+                <div class="text-4xl mb-4">🖼️</div>
+                <h3 class="text-xl font-semibold mb-2">Resim Sıkıştırma</h3>
+                <p class="text-gray-600 text-sm">JPEG/PNG resimleri kalite kaybı olmadan sıkıştırın.</p>
+            </div>
+
+            <!-- Metin Temizleme -->
+            <div class="tool-card glass-effect p-6" onclick="showTool('text-cleaner')">
+                <div class="text-4xl mb-4">📝</div>
+                <h3 class="text-xl font-semibold mb-2">Metin Temizleme</h3>
+                <p class="text-gray-600 text-sm">Fazla boşlukları, özel karakterleri temizleyin.</p>
+            </div>
+
+            <!-- QR Kod Oluşturucu -->
+            <div class="tool-card glass-effect p-6" onclick="showTool('qr-generator')">
+                <div class="text-4xl mb-4">📱</div>
+                <h3 class="text-xl font-semibold mb-2">QR Kod Oluşturucu</h3>
+                <p class="text-gray-600 text-sm">URL, metin veya iletişim bilgileri için QR kod oluşturun.</p>
+            </div>
+
+            <!-- Şifre Oluşturucu -->
+            <div class="tool-card glass-effect p-6" onclick="showTool('password-generator')">
+                <div class="text-4xl mb-4">🔐</div>
+                <h3 class="text-xl font-semibold mb-2">Şifre Oluşturucu</h3>
+                <p class="text-gray-600 text-sm">Güvenli, rastgele şifreler oluşturun.</p>
+            </div>
+
+            <!-- JSON Formatlayıcı -->
+            <div class="tool-card glass-effect p-6" onclick="showTool('json-formatter')">
+                <div class="text-4xl mb-4">📋</div>
+                <h3 class="text-xl font-semibold mb-2">JSON Formatlayıcı</h3>
+                <p class="text-gray-600 text-sm">JSON verilerini düzenleyin, formatlayın ve doğrulayın.</p>
+            </div>
+
+            <!-- PDF Birleştirme (Yeni) -->
+            <div class="tool-card glass-effect p-6" onclick="showTool('pdf-merger')">
+                <div class="text-4xl mb-4">📄</div>
+                <h3 class="text-xl font-semibold mb-2">PDF Birleştirme</h3>
+                <p class="text-gray-600 text-sm">Birden fazla PDF dosyasını tek dosyada birleştirin.</p>
+            </div>
+
+            <!-- Kelime Sayacı (Yeni) -->
+            <div class="tool-card glass-effect p-6" onclick="showTool('word-counter')">
+                <div class="text-4xl mb-4">📊</div>
+                <h3 class="text-xl font-semibold mb-2">Kelime Sayacı</h3>
+                <p class="text-gray-600 text-sm">Metninizdeki kelime, karakter ve paragraf sayısını hesaplayın.</p>
+            </div>
+
+            <!-- Renk Seçici (Yeni) -->
+            <div class="tool-card glass-effect p-6" onclick="showTool('color-picker')">
+                <div class="text-4xl mb-4">🎨</div>
+                <h3 class="text-xl font-semibold mb-2">Renk Seçici</h3>
+                <p class="text-gray-600 text-sm">Renk seçin, HEX, RGB, HSL kodlarını alın.</p>
+            </div>
+
+            <!-- Base64 Encode/Decode (Yeni) -->
+            <div class="tool-card glass-effect p-6" onclick="showTool('base64-converter')">
+                <div class="text-4xl mb-4">🔄</div>
+                <h3 class="text-xl font-semibold mb-2">Base64 Dönüştürücü</h3>
+                <p class="text-gray-600 text-sm">Metni Base64'e kodlayın veya çözün.</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center text-white/80 mb-8">
+            <p>© 2024 WebToolKit - Tüm işlemler tarayıcınızda yapılır.</p>
+            <div class="mt-4 space-x-4">
+                <a href="#" class="hover:text-white transition">Gizlilik Politikası</a>
+                <a href="#" class="hover:text-white transition">Kullanım Koşulları</a>
+                <a href="#" class="hover:text-white transition">İletişim</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Araç Sayfaları Container -->
+    <div id="tool-container" class="hidden-page max-w-4xl mx-auto">
+        <!-- Geri Butonu -->
+        <button onclick="showHome()" class="mb-6 text-white hover:text-gray-200 transition flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i> Ana Sayfaya Dön
+        </button>
+
+        <!-- Araç İçeriği Dinamik Olarak Buraya Yüklenecek -->
+        <div id="tool-content" class="glass-effect p-8 page-transition"></div>
+
+        <!-- Reklam Alanı 2 -->
+        <div class="ad-space mt-8" id="ad-bottom">
+            <div>
+                <i class="fas fa-ad text-2xl mb-2"></i>
+                <p>Reklam Alanı - Google AdSense veya diğer reklam ağları buraya gelecek</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Araç Verileri
+        const tools = {
+            'image-compress': {
+                title: 'Resim Sıkıştırma',
+                icon: '🖼️',
+                render: () => `
+                    <h2 class="text-3xl font-bold mb-6 flex items-center">
+                        <span class="mr-3">🖼️</span> Resim Sıkıştırma
+                    </h2>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-6" id="drop-zone">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600 mb-2">Resmi buraya sürükleyin veya tıklayarak seçin</p>
+                        <input type="file" id="image-input" accept="image/*" class="hidden">
+                        <button onclick="document.getElementById('image-input').click()" class="btn-primary text-white px-6 py-3 rounded-lg font-medium">
+                            Resim Seç
+                        </button>
+                    </div>
+                    <div id="image-preview" class="hidden">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold mb-2">Orijinal</h4>
+                                <img id="original-image" class="w-full rounded-lg shadow">
+                                <p id="original-size" class="text-sm text-gray-600 mt-2"></p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Sıkıştırılmış</h4>
+                                <img id="compressed-image" class="w-full rounded-lg shadow">
+                                <p id="compressed-size" class="text-sm text-gray-600 mt-2"></p>
+                                <p id="compression-ratio" class="text-sm text-green-600 font-semibold mt-2"></p>
+                            </div>
+                        </div>
+                        <label class="block mb-4 mt-6">
+                            <span class="text-gray-700 font-medium">Kalite: <span id="quality-value">70</span>%</span>
+                            <input type="range" id="quality-slider" min="10" max="100" value="70" class="w-full mt-2">
+                        </label>
+                        <button id="download-btn" class="btn-primary text-white px-8 py-3 rounded-lg font-medium w-full">
+                            <i class="fas fa-download mr-2"></i> İndir
+                        </button>
+                    </div>
+                `
+            },
+            'text-cleaner': {
+                title: 'Metin Temizleme',
+                icon: '📝',
+                render: () => `
+                    <h2 class="text-3xl font-bold mb-6 flex items-center">
+                        <span class="mr-3">📝</span> Metin Temizleme
+                    </h2>
+                    <textarea id="text-input" class="input-modern w-full h-40 p-4 rounded-lg mb-4" placeholder="Temizlenecek metni buraya yapıştırın..."></textarea>
+                    <div class="grid md:grid-cols-2 gap-4 mb-6">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="remove-extra-spaces" class="mr-2" checked>
+                            Fazla boşlukları kaldır
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="remove-special-chars" class="mr-2">
+                            Özel karakterleri kaldır
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="remove-line-breaks" class="mr-2">
+                            Satır sonlarını kaldır
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="to-lowercase" class="mr-2">
+                            Küçük harfe çevir
+                        </label>
+                    </div>
+                    <button onclick="cleanText()" class="btn-primary text-white px-8 py-3 rounded-lg font-medium w-full mb-4">
+                        <i class="fas fa-broom mr-2"></i> Temizle
+                    </button>
+                    <textarea id="text-output" class="input-modern w-full h-40 p-4 rounded-lg bg-gray-50" readonly placeholder="Temizlenmiş metin burada görünecek..."></textarea>
+                    <button onclick="copyText()" class="mt-4 text-gray-600 hover:text-gray-800 transition">
+                        <i class="fas fa-copy mr-2"></i> Kopyala
+                    </button>
+                `
+            },
+            'qr-generator': {
+                title: 'QR Kod Oluşturucu',
+                icon: '📱',
+                render: () => `
+                    <h2 class="text-3xl font-bold mb-6 flex items-center">
+                        <span class="mr-3">📱</span> QR Kod Oluşturucu
+                    </h2>
+                    <input type="text" id="qr-text" class="input-modern w-full p-4 rounded-lg mb-4" placeholder="URL, metin veya iletişim bilgisi girin...">
+                    <button onclick="generateQR()" class="btn-primary text-white px-8 py-3 rounded-lg font-medium w-full mb-6">
+                        <i class="fas fa-qrcode mr-2"></i> QR Kod Oluştur
+                    </button>
+                    <div id="qr-result" class="text-center hidden">
+                        <div id="qrcode" class="inline-block p-4 bg-white rounded-lg shadow-lg mb-4"></div>
+                        <br>
+                        <button onclick="downloadQR()" class="text-gray-600 hover:text-gray-800 transition mt-4">
+                            <i class="fas fa-download mr-2"></i> İndir
+                        </button>
+                    </div>
+                `
+            },
+            'password-generator': {
+                title: 'Şifre Oluşturucu',
+                icon: '🔐',
+                render: () => `
+                    <h2 class="text-3xl font-bold mb-6 flex items-center">
+                        <span class="mr-3">🔐</span> Şifre Oluşturucu
+                    </h2>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-6 flex items-center justify-between">
+                        <span id="generated-password" class="font-mono text-xl break-all">Henüz oluşturulmadı</span>
+                        <button onclick="copyPassword()" class="text-gray-600 hover:text-gray-800 ml-4">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <label class="block mb-4">
+                        <span class="text-gray-700 font-medium">Uzunluk: <span id="length-value">16</span></span>
+                        <input type="range" id="length-slider" min="8" max="64" value="16" class="w-full mt-2">
+                    </label>
+                    <div class="grid md:grid-cols-2 gap-4 mb-6">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="include-uppercase" class="mr-2" checked>
+                            Büyük Harfler (A-Z)
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="include-lowercase" class="mr-2" checked>
+                            Küçük Harfler (a-z)
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="include-numbers" class="mr-2" checked>
+                            Rakamlar (0-9)
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="include-symbols" class="mr-2" checked>
+                            Semboller (!@#$%)
+                        </label>
+                    </div>
+                    <button onclick="generatePassword()" class="btn-primary text-white px-8 py-3 rounded-lg font-medium w-full">
+                        <i class="fas fa-sync-alt mr-2"></i> Yeni Şifre Oluştur
+                    </button>
+                `
+            },
+            'json-formatter': {
+                title: 'JSON Formatlayıcı',
+                icon: '📋',
+                render: () => `
+                    <h2 class="text-3xl font-bold mb-6 flex items-center">
+                        <span class="mr-3">📋</span> JSON Formatlayıcı
+                    </h2>
+                    <textarea id="json-input" class="input-modern w-full h-40 p-4 rounded-lg mb-4 font-mono text-sm" placeholder="JSON verisini buraya yapıştırın..."></textarea>
+                    <div class="flex gap-4 mb-4">
+                        <button onclick="formatJSON()" class="btn-primary text-white px-6 py-3 rounded-lg font-medium flex-1">
+                            <i class="fas fa-indent mr-2"></i> Formatla
+                        </button>
+                        <button onclick="minifyJSON()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium flex-1 transition">
+                            <i class="fas fa-compress mr-2"></i> Küçült
+                        </button>
+                    </div>
+                    <textarea id="json-output" class="input-modern w-full h-40 p-4 rounded-lg bg-gray-50 font-mono text-sm" readonly placeholder="Sonuç burada görünecek..."></textarea>
+                    <div id="json-error" class="text-red-600 mt-2 hidden"></div>
+                `
+            },
+            'pdf-merger': {
+                title: 'PDF Birleştirme',
+                icon: '📄',
+                render: () => `
+                    <h2 class="text-3xl font-bold mb-6 flex items-center">
+                        <span class="mr-3">📄</span> PDF Birleştirme
+                    </h2>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-6">
+                        <i class="fas fa-file-pdf text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600 mb-2">PDF dosyalarını buraya sürükleyin veya seçin</p>
+                        <input type="file" id="pdf-input" accept=".pdf" multiple class="hidden">
+                        <button onclick="document.getElementById('pdf-input').click()" class="btn-primary text-white px-6 py-3 rounded-lg font-medium">
+                            PDF Seç
+                        </button>
+                    </div>
+                    <div id="pdf-list" class="mb-6"></div>
+                    <button id="merge-btn" onclick="mergePDFs()" class="btn-primary text-white px-8 py-3 rounded-lg font-medium w-full hidden">
+                        <i class="fas fa-object-group mr-2"></i> PDF'leri Birleştir
+                    </button>
+                    <div id="pdf-result" class="hidden mt-6 text-center">
+                        <p class="text-green-600 font-semibold mb-4">PDF başarıyla birleştirildi!</p>
+                        <button id="download-pdf-btn" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium">
+                            <i class="fas fa-download mr-2"></i> İndir
+                        </button>
+                    </div>
+                `
+            },
+            'word-counter': {
+                title: 'Kelime Sayacı',
+                icon: '📊',
+                render: () => `
+                    <h2 class="text-3xl font-bold mb-6 flex items-center">
+                        <span class="mr-3">📊</span> Kelime Sayacı
+                    </h2>
+                    <textarea id="word-input" class="input-modern w-full h-40 p-4 rounded-lg mb-6" placeholder="Metninizi buraya yapıştırın..." oninput="countWords()"></textarea>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-blue-100 p-4 rounded-lg text-center">
+                            <p class="text-3xl font-bold text-blue-600" id="word-count">0</p>
+                            <p class="text-sm text-gray-600">Kelime</p>
+                        </div>
+                        <div class="bg-green-100 p-4 rounded-lg text-center">
+                            <p class="text-3xl font-bold text-green-600" id="char-count">0</p>
+                            <p class="text-sm text-gray-600">Karakter</p>
+                        </div>
+                        <div class="bg-purple-100 p-4 rounded-lg text-center">
+                            <p class="text-3xl font-bold text-purple-600" id="sentence-count">0</p>
+                            <p class="text-sm text-gray-600">Cümle</p>
+                        </div>
+                        <div class="bg-orange-100 p-4 rounded-lg text-center">
+                            <p class="text-3xl font-bold text-orange-600" id="paragraph-count">0</p>
+                            <p class="text-sm text-gray-600">Paragraf</p>
+                        </div>
+                    </div>
+                `
+            },
+            'color-picker': {
+                title: 'Renk Seçici',
+                icon: '🎨',
+                render: () => `
+                    <h2 class="text-3xl font-bold mb-6 flex items-center">
+                        <span class="mr-3">🎨</span> Renk Seçici
+                    </h2>
+                    <div class="text-center mb-6">
+                        <input type="color" id="color-input" value="#667eea" class="w-32 h-32 rounded-lg cursor-pointer border-0" oninput="updateColorValues()">
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <p class="text-sm text-gray-600 mb-1">HEX</p>
+                            <p class="font-mono text-lg" id="hex-value">#667eea</p>
+                        </div>
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <p class="text-sm text-gray-600 mb-1">RGB</p>
+                            <p class="font-mono text-lg" id="rgb-value">rgb(102, 126, 234)</p>
+                        </div>
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <p class="text-sm text-gray-600 mb-1">HSL</p>
+                            <p class="font-mono text-lg" id="hsl-value">hsl(229, 76%, 66%)</p>
+                        </div>
+                    </div>
+                    <button onclick="copyColor()" class="mt-6 text-gray-600 hover:text-gray-800 transition w-full text-center">
+                        <i class="fas fa-copy mr-2"></i> HEX Değerini Kopyala
+                    </button>
+                `
+            },
+            'base64-converter': {
+                title: 'Base64 Dönüştürücü',
+                icon: '🔄',
+                render: () => `
+                    <h2 class="text-3xl font-bold mb-6 flex items-center">
+                        <span class="mr-3">🔄</span> Base64 Dönüştürücü
+                    </h2>
+                    <textarea id="base64-input" class="input-modern w-full h-32 p-4 rounded-lg mb-4" placeholder="Metin girin..."></textarea>
+                    <div class="flex gap-4 mb-6">
+                        <button onclick="encodeBase64()" class="btn-primary text-white px-6 py-3 rounded-lg font-medium flex-1">
+                            <i class="fas fa-lock mr-2"></i> Encode
+                        </button>
+                        <button onclick="decodeBase64()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium flex-1 transition">
+                            <i class="fas fa-unlock mr-2"></i> Decode
+                        </button>
+                    </div>
+                    <textarea id="base64-output" class="input-modern w-full h-32 p-4 rounded-lg bg-gray-50 font-mono text-sm" readonly placeholder="Sonuç burada görünecek..."></textarea>
+                    <button onclick="copyBase64()" class="mt-4 text-gray-600 hover:text-gray-800 transition">
+                        <i class="fas fa-copy mr-2"></i> Kopyala
+                    </button>
+                `
+            }
+        };
+
+        let currentTool = null;
+        let compressedBlob = null;
+        let mergedPdfBytes = null;
+
+        // Sayfa Geçişleri
+        function showTool(toolId) {
+            currentTool = toolId;
+            document.getElementById('home-page').classList.add('hidden-page');
+            document.getElementById('tool-container').classList.remove('hidden-page');
+            
+            const tool = tools[toolId];
+            document.getElementById('tool-content').innerHTML = tool.render();
+            
+            // Araç özel init fonksiyonları
+            if (toolId === 'image-compress') initImageCompress();
+            if (toolId === 'password-generator') initPasswordGenerator();
+            if (toolId === 'pdf-merger') initPDFMerger();
+            
+            window.scrollTo(0, 0);
+        }
+
+        function showHome() {
+            document.getElementById('tool-container').classList.add('hidden-page');
+            document.getElementById('home-page').classList.remove('hidden-page');
+            currentTool = null;
+            window.scrollTo(0, 0);
+        }
+
+        // Resim Sıkıştırma
+        function initImageCompress() {
+            const input = document.getElementById('image-input');
+            const dropZone = document.getElementById('drop-zone');
+            
+            input.addEventListener('change', handleImageSelect);
+            
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('border-blue-500');
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('border-blue-500');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-blue-500');
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type.startsWith('image/')) {
+                    processImage(files[0]);
+                }
+            });
+
+            document.getElementById('quality-slider').addEventListener('input', (e) => {
+                document.getElementById('quality-value').textContent = e.target.value;
+                if (input.files[0]) {
+                    processImage(input.files[0], false);
+                }
+            });
+
+            document.getElementById('download-btn')?.addEventListener('click', downloadCompressedImage);
+        }
+
+        function handleImageSelect(e) {
+            if (e.target.files[0]) {
+                processImage(e.target.files[0]);
+            }
+        }
+
+        function processImage(file, selectNew = true) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    document.getElementById('image-preview').classList.remove('hidden');
+                    document.getElementById('original-image').src = e.target.result;
+                    document.getElementById('original-size').textContent = `Boyut: ${(file.size / 1024).toFixed(2)} KB`;
+                    
+                    compressImage(img, file.type);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function compressImage(img, mimeType) {
+            const quality = parseInt(document.getElementById('quality-slider').value) / 100;
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            
+            canvas.toBlob((blob) => {
+                compressedBlob = blob;
+                const url = URL.createObjectURL(blob);
+                document.getElementById('compressed-image').src = url;
+                document.getElementById('compressed-size').textContent = `Boyut: ${(blob.size / 1024).toFixed(2)} KB`;
+                
+                const ratio = ((1 - blob.size / (img.width * img.height * 4)) * 100).toFixed(1);
+                document.getElementById('compression-ratio').textContent = `Sıkıştırma Oranı: %${ratio}`;
+                
+                document.getElementById('download-btn').onclick = downloadCompressedImage;
+            }, mimeType, quality);
+        }
+
+        function downloadCompressedImage() {
+            if (!compressedBlob) return;
+            const url = URL.createObjectURL(compressedBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'compressed-image.jpg';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Metin Temizleme
+        function cleanText() {
+            let text = document.getElementById('text-input').value;
+            
+            if (document.getElementById('remove-extra-spaces').checked) {
+                text = text.replace(/\s+/g, ' ').trim();
+            }
+            if (document.getElementById('remove-special-chars').checked) {
+                text = text.replace(/[^\w\s]/g, '');
+            }
+            if (document.getElementById('remove-line-breaks').checked) {
+                text = text.replace(/[\r\n]+/g, ' ');
+            }
+            if (document.getElementById('to-lowercase').checked) {
+                text = text.toLowerCase();
+            }
+            
+            document.getElementById('text-output').value = text;
+        }
+
+        function copyText() {
+            const output = document.getElementById('text-output');
+            output.select();
+            document.execCommand('copy');
+            alert('Metin kopyalandı!');
+        }
+
+        // QR Kod
+        function generateQR() {
+            const text = document.getElementById('qr-text').value;
+            if (!text) {
+                alert('Lütfen bir metin girin!');
+                return;
+            }
+            
+            document.getElementById('qrcode').innerHTML = '';
+            new QRCode(document.getElementById('qrcode'), {
+                text: text,
+                width: 200,
+                height: 200
+            });
+            document.getElementById('qr-result').classList.remove('hidden');
+        }
+
+        function downloadQR() {
+            const qrCanvas = document.querySelector('#qrcode canvas');
+            if (qrCanvas) {
+                const link = document.createElement('a');
+                link.download = 'qrcode.png';
+                link.href = qrCanvas.toDataURL();
+                link.click();
+            }
+        }
+
+        // Şifre Oluşturucu
+        function initPasswordGenerator() {
+            document.getElementById('length-slider').addEventListener('input', (e) => {
+                document.getElementById('length-value').textContent = e.target.value;
+            });
+            generatePassword();
+        }
+
+        function generatePassword() {
+            const length = parseInt(document.getElementById('length-slider').value);
+            const includeUpper = document.getElementById('include-uppercase').checked;
+            const includeLower = document.getElementById('include-lowercase').checked;
+            const includeNums = document.getElementById('include-numbers').checked;
+            const includeSyms = document.getElementById('include-symbols').checked;
+            
+            let chars = '';
+            if (includeUpper) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            if (includeLower) chars += 'abcdefghijklmnopqrstuvwxyz';
+            if (includeNums) chars += '0123456789';
+            if (includeSyms) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+            
+            if (chars === '') {
+                document.getElementById('generated-password').textContent = 'En az bir seçenek seçin!';
+                return;
+            }
+            
+            let password = '';
+            for (let i = 0; i < length; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            document.getElementById('generated-password').textContent = password;
+        }
+
+        function copyPassword() {
+            const password = document.getElementById('generated-password').textContent;
+            navigator.clipboard.writeText(password);
+            alert('Şifre kopyalandı!');
+        }
+
+        // JSON Formatlayıcı
+        function formatJSON() {
+            try {
+                const input = document.getElementById('json-input').value;
+                const obj = JSON.parse(input);
+                document.getElementById('json-output').value = JSON.stringify(obj, null, 2);
+                document.getElementById('json-error').classList.add('hidden');
+            } catch (e) {
+                document.getElementById('json-error').textContent = 'Geçersiz JSON: ' + e.message;
+                document.getElementById('json-error').classList.remove('hidden');
+            }
+        }
+
+        function minifyJSON() {
+            try {
+                const input = document.getElementById('json-input').value;
+                const obj = JSON.parse(input);
+                document.getElementById('json-output').value = JSON.stringify(obj);
+                document.getElementById('json-error').classList.add('hidden');
+            } catch (e) {
+                document.getElementById('json-error').textContent = 'Geçersiz JSON: ' + e.message;
+                document.getElementById('json-error').classList.remove('hidden');
+            }
+        }
+
+        // PDF Birleştirme
+        function initPDFMerger() {
+            const input = document.getElementById('pdf-input');
+            input.addEventListener('change', handlePDFSelect);
+        }
+
+        let pdfFiles = [];
+
+        async function handlePDFSelect(e) {
+            const files = Array.from(e.target.files);
+            pdfFiles = [...pdfFiles, ...files];
+            
+            const list = document.getElementById('pdf-list');
+            list.innerHTML = '<h4 class="font-semibold mb-2">Seçili Dosyalar:</h4>';
+            
+            pdfFiles.forEach((file, index) => {
+                list.innerHTML += `
+                    <div class="flex items-center justify-between bg-gray-100 p-3 rounded mb-2">
+                        <span>${index + 1}. ${file.name}</span>
+                        <button onclick="removePDF(${index})" class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            
+            if (pdfFiles.length > 1) {
+                document.getElementById('merge-btn').classList.remove('hidden');
+            }
+        }
+
+        function removePDF(index) {
+            pdfFiles.splice(index, 1);
+            handlePDFSelect({ target: { files: pdfFiles } });
+            if (pdfFiles.length <= 1) {
+                document.getElementById('merge-btn').classList.add('hidden');
+            }
+        }
+
+        async function mergePDFs() {
+            if (pdfFiles.length < 2) return;
+            
+            try {
+                const { PDFDocument } = PDFLib;
+                const mergedPdf = await PDFDocument.create();
+                
+                for (const file of pdfFiles) {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await PDFDocument.load(arrayBuffer);
+                    const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                    copiedPages.forEach((page) => mergedPdf.addPage(page));
+                }
+                
+                mergedPdfBytes = await mergedPdf.save();
+                
+                document.getElementById('pdf-result').classList.remove('hidden');
+                document.getElementById('download-pdf-btn').onclick = downloadMergedPDF;
+            } catch (error) {
+                alert('PDF birleştirme hatası: ' + error.message);
+            }
+        }
+
+        function downloadMergedPDF() {
+            if (!mergedPdfBytes) return;
+            const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'merged.pdf';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Kelime Sayacı
+        function countWords() {
+            const text = document.getElementById('word-input').value;
+            
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const chars = text.length;
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim()).length;
+            const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim()).length;
+            
+            document.getElementById('word-count').textContent = words;
+            document.getElementById('char-count').textContent = chars;
+            document.getElementById('sentence-count').textContent = sentences;
+            document.getElementById('paragraph-count').textContent = paragraphs;
+        }
+
+        // Renk Seçici
+        function updateColorValues() {
+            const color = document.getElementById('color-input').value;
+            
+            // HEX
+            document.getElementById('hex-value').textContent = color;
+            
+            // RGB
+            const r = parseInt(color.substr(1, 2), 16);
+            const g = parseInt(color.substr(3, 2), 16);
+            const b = parseInt(color.substr(5, 2), 16);
+            document.getElementById('rgb-value').textContent = `rgb(${r}, ${g}, ${b})`;
+            
+            // HSL hesaplama
+            const rNorm = r / 255;
+            const gNorm = g / 255;
+            const bNorm = b / 255;
+            const max = Math.max(rNorm, gNorm, bNorm);
+            const min = Math.min(rNorm, gNorm, bNorm);
+            let h, s, l = (max + min) / 2;
+            
+            if (max === min) {
+                h = s = 0;
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case rNorm: h = ((gNorm - bNorm) / d + (gNorm < bNorm ? 6 : 0)) / 6; break;
+                    case gNorm: h = ((bNorm - rNorm) / d + 2) / 6; break;
+                    case bNorm: h = ((rNorm - gNorm) / d + 4) / 6; break;
+                }
+            }
+            
+            h = Math.round(h * 360);
+            s = Math.round(s * 100);
+            l = Math.round(l * 100);
+            document.getElementById('hsl-value').textContent = `hsl(${h}, ${s}%, ${l}%)`;
+        }
+
+        function copyColor() {
+            const color = document.getElementById('hex-value').textContent;
+            navigator.clipboard.writeText(color);
+            alert('Renk kodu kopyalandı!');
+        }
+
+        // Base64
+        function encodeBase64() {
+            const input = document.getElementById('base64-input').value;
+            document.getElementById('base64-output').value = btoa(input);
+        }
+
+        function decodeBase64() {
+            try {
+                const input = document.getElementById('base64-input').value;
+                document.getElementById('base64-output').value = atob(input);
+            } catch (e) {
+                document.getElementById('base64-output').value = 'Geçersiz Base64!';
+            }
+        }
+
+        function copyBase64() {
+            const output = document.getElementById('base64-output');
+            output.select();
+            document.execCommand('copy');
+            alert('Kopyalandı!');
+        }
+    </script>
+</body>
+</html>
