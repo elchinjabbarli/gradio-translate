@@ -1,0 +1,28 @@
+```
+# Build artifacts and distribution
+dist/
+build/
+*.js
+*.css
+*.svg
+*.png
+
+# Dependencies
+node_modules/
+
+# Archives
+*.zip
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+```
